@@ -14,7 +14,7 @@ const subscribeHook = async (z, bundle) => {
 
   // data returned from this object will be available in `performUnsubscribe` as `bundle.subscribeData`
   const response = await z.request(options);
-  return response.json;
+  return response.data;
 };
 
 const unsubscribeHook = async (z, bundle) => {
@@ -28,7 +28,7 @@ const unsubscribeHook = async (z, bundle) => {
 
   // You may return a promise or a normal data structure from any perform method.
   const response = await z.request(options);
-  return response.json;
+  return response.data;
 };
 
 // this function runs when a hook is recieved on a live zap (or if testing with a hook)
@@ -60,7 +60,7 @@ const getFallbackRealRecipe = async (z, bundle) => {
 
   const response = await z.request(options);
 
-  return response.json;
+  return response.data;
 };
 
 module.exports = {

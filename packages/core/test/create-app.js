@@ -1,5 +1,6 @@
 'use strict';
 
+const nock = require('nock');
 const should = require('should');
 const createApp = require('../src/create-app');
 const createInput = require('../src/tools/create-input');
@@ -613,6 +614,72 @@ describe('create-app', () => {
 
       await appFail(input).should.be.rejectedWith(
         /Cannot find module 'non-existing-package'/
+      );
+    });
+  });
+
+  describe('response.content parsing', () => {
+    it('should handle JSON', async () => {
+      const app = createApp(appDefinition);
+
+      const event = {
+        command: 'execute',
+        bundle: {
+          inputData: {
+            url: 'https://httpbin.org/get'
+          }
+        },
+        method: 'resources.executeRequestAsShorthand.create.operation.perform'
+      };
+      const { results } = await app(
+        createInput(appDefinition, event, testLogger)
+      );
+      should(results)
+        .be.an.Object()
+        .and.not.be.an.Array();
+    });
+    it('should handle form', async () => {
+      const app = createApp(appDefinition);
+
+      // httpbin doesn't support form-urlencoded
+      nock('https://httpbin.org')
+        .get('/get')
+        .reply(200, 'foo=bar', {
+          'content-type': 'application/x-www-form-urlencoded'
+        });
+
+      const event = {
+        command: 'execute',
+        bundle: {
+          inputData: {
+            url: 'https://httpbin.org/get'
+          }
+        },
+        method: 'resources.executeRequestAsShorthand.create.operation.perform'
+      };
+      const { results } = await app(
+        createInput(appDefinition, event, testLogger)
+      );
+      should(results).match({ foo: 'bar' });
+
+      nock.restore();
+    });
+    it('should error on other types like XML', async () => {
+      const app = createApp(appDefinition);
+
+      const event = {
+        command: 'execute',
+        bundle: {
+          inputData: {
+            url: 'https://httpbin.org/xml'
+          }
+        },
+        method: 'resources.executeRequestAsShorthand.create.operation.perform'
+      };
+      await app(
+        createInput(appDefinition, event, testLogger)
+      ).should.be.rejectedWith(
+        /Response needs to be JSON, form-urlencoded or parsed in middleware/
       );
     });
   });

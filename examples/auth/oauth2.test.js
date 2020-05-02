@@ -113,7 +113,7 @@ describe('oauth2 app', () => {
     };
 
     const response = await appTester(App.authentication.test, bundle);
-    response.json.should.have.property('username');
-    response.json.username.should.eql('Bret');
+    response.data.should.have.property('username');
+    response.data.username.should.eql('Bret');
   });
 });

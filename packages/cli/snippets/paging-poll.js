@@ -26,7 +26,7 @@ const performPaging = (z, bundle) => {
 
   return Promise.all(promises).then(res => {
     // res is an array of responses
-    const results = res.map(r => r.json); // array of arrays of js objects
+    const results = res.map(r => r.data); // array of arrays of js objects
     return Array.prototype.concat.apply([], results); // flatten array
   });
 };

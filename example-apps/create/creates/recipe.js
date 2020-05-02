@@ -49,7 +49,7 @@ module.exports = {
         }
       });
 
-      return promise.then(response => response.json);
+      return promise.then(response => response.data);
     },
 
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example

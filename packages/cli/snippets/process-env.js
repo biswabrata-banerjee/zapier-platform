@@ -8,7 +8,7 @@ const listExample = (z, bundle) => {
     'https://example.com/api/v2/recipes.json',
     httpOptions
   );
-  return response.then(res => res.json);
+  return response.then(res => res.data);
 };
 
 const App = {

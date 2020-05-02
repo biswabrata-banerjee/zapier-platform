@@ -1,5 +1,4 @@
 const { promisify } = require('util');
-const querystring = require('querystring');
 
 const _ = require('lodash');
 const FormData = require('form-data');
@@ -694,22 +693,14 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         }
 
         if (options.defaultToResponse && !result) {
-          try {
-            result = zcli.JSON.parse(response.content);
-          } catch {
-            result = {};
-          }
+          result = response.data || {};
         }
       } else {
         if (options.checkResponseStatus) {
           response.throwForStatus();
         }
 
-        try {
-          result = zcli.JSON.parse(response.content);
-        } catch {
-          result = {};
-        }
+        result = response.data || {};
       }
     }
 
@@ -725,7 +716,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       skipThrowForStatus: true
     });
     response.throwForStatus();
-    return querystring.parse(response.content);
+    return response.data;
   };
 
   const runOAuth1GetRequestToken = bundle => {

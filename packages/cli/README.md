@@ -567,7 +567,7 @@ const getSessionKey = (z, bundle) => {
       throw new Error('The username/password you supplied is invalid');
     }
     return {
-      sessionKey: response.json.sessionKey
+      sessionKey: response.data.sessionKey
     };
   });
 };
@@ -1059,7 +1059,7 @@ In some cases, it might be necessary to provide fields that are dynamically gene
 const recipeFields = (z, bundle) => {
   const response = z.request('https://example.com/api/v2/fields.json');
   // json is is [{"key":"field_1"},{"key":"field_2"}]
-  return response.then(res => res.json);
+  return response.then(res => res.data);
 };
 
 const App = {
@@ -1268,7 +1268,7 @@ perform: () => {
         spreadsheet_id: bundle.inputData.spreadsheet_id
       }
     })
-    .then(response => response.json);
+    .then(response => response.data);
 };
 
 ```
@@ -1488,7 +1488,7 @@ To define an Output Field for a nested field use `{{parent}}__{{key}}`. For chil
 const recipeOutputFields = (z, bundle) => {
   const response = z.request('https://example.com/api/v2/fields.json');
   // json is like [{"key":"field_1","label":"Label for Custom Field"}]
-  return response.then(res => res.json);
+  return response.then(res => res.data);
 };
 
 const App = {
@@ -1831,7 +1831,7 @@ const listExample = (z, bundle) => {
     'https://example.com/api/v2/recipes.json',
     httpOptions
   );
-  return response.then(res => res.json);
+  return response.then(res => res.data);
 };
 
 const App = {
@@ -1925,7 +1925,7 @@ const listExample = (z, bundle) => {
     .then(response => {
       response.throwForStatus();
 
-      const recipes = response.json;
+      const recipes = response.data;
       // do any custom processing of recipes here...
 
       return recipes;
@@ -2015,17 +2015,22 @@ const handleErrors = (response, z) => {
   }
 
   // Throw an error that `throwForStatus` wouldn't throw (correctly) for.
-  else if (response.status === 200 && response.json.success === false) {
-    throw new z.errors.Error(response.json.message, response.json.code);
+  else if (response.status === 200 && response.data.success === false) {
+    throw new z.errors.Error(response.data.message, response.data.code);
   }
+};
 
+const parseXML = (response, z, bundle) => {
+  // Parse content that is not JSON
+  // eslint-disable-next-line no-undef
+  response.data = xml.parse(response.content);
   return response;
 };
 
 const App = {
   // ...
   beforeRequest: [addHeader],
-  afterResponse: [handleErrors]
+  afterResponse: [parseXML, handleErrors]
   // ...
 };
 
@@ -2091,7 +2096,10 @@ The response object returned by `z.request([url], options)` supports the followi
 
 * `status`: The response status code, i.e. `200`, `404`, etc.
 * `content`: The response content as a String. For Buffer, try `options.raw = true`.
-* `json`: The response content as an object (or `undefined`). If `options.raw = true` - is a promise.
+* `data`: The response content as an object if the content is JSON or ` application/x-www-form-urlencoded` (`undefined` otherwise).
+* `json`: The response content as an object if the content is JSON (`undefined` otherwise). Deprecated; better to use `data`.
+* `json()`: Get the response content as an object, if `options.raw = true` and content is JSON (returns a promise).
+* `data`: The response content as an object (or `undefined`).
 * `body`: A stream available only if you provide `options.raw = true`.
 * `headers`: Response headers object. The header keys are all lower case.
 * `getHeader(key)`: Retrieve response header, case insensitive: `response.getHeader('My-Header')`
@@ -2110,8 +2118,9 @@ z.request({
   response.request; // original request options
   response.throwForStatus();
   // if options.raw === false (default)...
-  response.json; // identical to:
-  JSON.parse(response.content);
+  response.data; // identical to:
+  JSON.parse(response.content); // or:
+  querystring.parse(response.content);
   // if options.raw === true...
   response.buffer().then(buf => buf.toString());
   response.text().then(content => content);
@@ -2142,13 +2151,13 @@ Here is an example that pulls in extra data for a movie:
 ```js
 const getExtraDataFunction = (z, bundle) => {
   const url = `https://example.com/movies/${bundle.inputData.id}.json`;
-  return z.request(url).then(res => res.json);
+  return z.request(url).then(res => res.data);
 };
 
 const movieList = (z, bundle) => {
   return z
     .request('https://example.com/movies.json')
-    .then(res => res.json)
+    .then(res => res.data)
     .then(results => {
       return results.map(result => {
         // so maybe /movies.json is thin content but
@@ -2246,7 +2255,7 @@ const stashPDFfunction = (z, bundle) => {
 const pdfList = (z, bundle) => {
   return z
     .request('https://example.com/pdfs.json')
-    .then(res => res.json)
+    .then(res => res.data)
     .then(results => {
       return results.map(result => {
         // lazily convert a secret_download_url to a stashed url
@@ -2791,6 +2800,8 @@ Not natively, but it can! Users have reported that the following `npm` modules a
 * [xml2js](https://github.com/Leonidas-from-XIV/node-xml2js)
 * [fast-xml-parser](https://github.com/NaturalIntelligence/fast-xml-parser)
 
+For [shorthand requests](shorthand-http-requests), use an `afterResponse` [middleware](using-http-middleware) that sets `response.json` to the parsed XML:
+
 ```js
 const xml = require('pixl-xml');
 
@@ -2798,7 +2809,7 @@ const App = {
   // ...
   afterResponse: [
     (response, z, bundle) => {
-      response.xml = xml.parse(response.content);
+      response.data = xml.parse(response.content);
       return response;
     }
   ]
@@ -2840,7 +2851,7 @@ const performPaging = (z, bundle) => {
 
   return Promise.all(promises).then(res => {
     // res is an array of responses
-    const results = res.map(r => r.json); // array of arrays of js objects
+    const results = res.map(r => r.data); // array of arrays of js objects
     return Array.prototype.concat.apply([], results); // flatten array
   });
 };
@@ -2882,7 +2893,7 @@ const asyncExample = async (z, bundle) => {
     }
   });
 
-  let results = response.json;
+  let results = response.data;
 
   // keep paging until the last item was created over two hours ago
   // then we know we almost certainly haven't missed anything and can let
@@ -2899,7 +2910,7 @@ const asyncExample = async (z, bundle) => {
       }
     });
 
-    results = results.concat(response.json);
+    results = results.concat(response.data);
   }
 
   return results;

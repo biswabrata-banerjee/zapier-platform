@@ -24,7 +24,7 @@ const uploadFile = (z, bundle) => {
       body: formData
     })
     .then(response => {
-      const file = response.json;
+      const file = response.data;
 
       // Make it possible to use the actual uploaded (or online converted)
       // file in a subsequent action. No need to download it now, so again

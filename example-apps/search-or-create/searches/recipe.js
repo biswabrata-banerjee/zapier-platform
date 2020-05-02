@@ -6,7 +6,7 @@ const searchRecipe = (z, bundle) => {
       name: bundle.inputData.name
     }
   });
-  return responsePromise.then(response => response.json);
+  return responsePromise.then(response => response.data);
 };
 
 module.exports = {

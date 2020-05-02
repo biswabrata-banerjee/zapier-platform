@@ -5,5 +5,5 @@ perform: () => {
         spreadsheet_id: bundle.inputData.spreadsheet_id
       }
     })
-    .then(response => response.json);
+    .then(response => response.data);
 };

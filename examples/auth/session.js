@@ -17,7 +17,7 @@ const getSessionKey = async (z, bundle) => {
   });
 
   return {
-    sessionKey: response.json.sessionKey // || 'secret'
+    sessionKey: response.data.sessionKey // || 'secret'
   };
 };
 

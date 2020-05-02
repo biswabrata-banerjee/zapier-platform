@@ -1,12 +1,12 @@
 const getExtraDataFunction = (z, bundle) => {
   const url = `https://example.com/movies/${bundle.inputData.id}.json`;
-  return z.request(url).then(res => res.json);
+  return z.request(url).then(res => res.data);
 };
 
 const movieList = (z, bundle) => {
   return z
     .request('https://example.com/movies.json')
-    .then(res => res.json)
+    .then(res => res.data)
     .then(results => {
       return results.map(result => {
         // so maybe /movies.json is thin content but

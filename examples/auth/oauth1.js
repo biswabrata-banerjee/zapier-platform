@@ -1,5 +1,3 @@
-const querystring = require('querystring');
-
 const REQUEST_TOKEN_URL = 'https://trello.com/1/OAuthGetRequestToken';
 const ACCESS_TOKEN_URL = 'https://trello.com/1/OAuthGetAccessToken';
 const AUTHORIZE_URL = 'https://trello.com/1/OAuthAuthorizeToken';
@@ -16,7 +14,7 @@ const getRequestToken = async (z, bundle) => {
       // oauth_version: '1.0' // sometimes required
     }
   });
-  return querystring.parse(response.content);
+  return response.data;
 };
 
 const getAccessToken = async (z, bundle) => {
@@ -31,7 +29,7 @@ const getAccessToken = async (z, bundle) => {
       oauth_verifier: bundle.inputData.oauth_verifier
     }
   });
-  return querystring.parse(response.content);
+  return response.data;
 };
 
 const config = {

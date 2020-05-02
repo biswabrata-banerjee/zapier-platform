@@ -20,8 +20,8 @@ const getAccessToken = async (z, bundle) => {
   // Needs to return `access_token`.
   // If your app does an app refresh, then `refresh_token` should be returned as well
   return {
-    access_token: response.json.access_token,
-    refresh_token: response.json.refresh_token
+    access_token: response.data.access_token,
+    refresh_token: response.data.refresh_token
   };
 };
 
@@ -46,7 +46,7 @@ const refreshAccessToken = async (z, bundle) => {
   // If the refresh token stays constant, no need to return it
   // If the refresh token changes, return it here to update the stored value in Zapier
   return {
-    access_token: response.json.access_token
+    access_token: response.data.access_token
   };
 };
 

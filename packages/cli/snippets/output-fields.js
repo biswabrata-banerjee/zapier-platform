@@ -1,7 +1,7 @@
 const recipeOutputFields = (z, bundle) => {
   const response = z.request('https://example.com/api/v2/fields.json');
   // json is like [{"key":"field_1","label":"Label for Custom Field"}]
-  return response.then(res => res.json);
+  return response.then(res => res.data);
 };
 
 const App = {

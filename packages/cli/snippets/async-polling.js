@@ -15,7 +15,7 @@ const asyncExample = async (z, bundle) => {
     }
   });
 
-  let results = response.json;
+  let results = response.data;
 
   // keep paging until the last item was created over two hours ago
   // then we know we almost certainly haven't missed anything and can let
@@ -32,7 +32,7 @@ const asyncExample = async (z, bundle) => {
       }
     });
 
-    results = results.concat(response.json);
+    results = results.concat(response.data);
   }
 
   return results;

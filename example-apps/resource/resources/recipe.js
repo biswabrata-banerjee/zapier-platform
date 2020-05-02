@@ -5,7 +5,7 @@ const getRecipe = (z, bundle) => {
     .request({
       url: `${_sharedBaseUrl}/recipes/${bundle.inputData.id}`
     })
-    .then(response => response.json);
+    .then(response => response.data);
 };
 
 const listRecipes = (z, bundle) => {
@@ -16,7 +16,7 @@ const listRecipes = (z, bundle) => {
         style: bundle.inputData.style
       }
     })
-    .then(response => response.json);
+    .then(response => response.data);
 };
 
 const createRecipe = (z, bundle) => {
@@ -33,7 +33,7 @@ const createRecipe = (z, bundle) => {
     }
   };
 
-  return z.request(requestOptions).then(response => response.json);
+  return z.request(requestOptions).then(response => response.data);
 };
 
 const searchRecipe = (z, bundle) => {
@@ -45,7 +45,7 @@ const searchRecipe = (z, bundle) => {
       }
     })
     .then(response => {
-      const matchingRecipes = response.json;
+      const matchingRecipes = response.data;
 
       // Only return the first matching recipe
       if (matchingRecipes && matchingRecipes.length) {

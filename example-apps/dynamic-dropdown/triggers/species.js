@@ -13,7 +13,7 @@ const fetchList = (z, bundle) => {
   }
 
   return z.request(request).then(response => {
-    const speciesArray = response.json.results;
+    const speciesArray = response.data.results;
     speciesArray.forEach(species => {
       // copy the "url" field into an "id" field
       species.id = generateID(species.url);

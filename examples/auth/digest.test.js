@@ -19,8 +19,8 @@ describe('digest auth', () => {
     const response = await appTester(App.authentication.test, bundle);
 
     response.status.should.eql(200);
-    response.json.authenticated.should.be.true();
-    response.json.user.should.eql('myuser');
+    response.data.authenticated.should.be.true();
+    response.data.user.should.eql('myuser');
   });
 
   it('fails on bad auth', () => {

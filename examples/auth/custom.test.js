@@ -16,7 +16,7 @@ describe('custom auth', () => {
     };
 
     const response = await appTester(App.authentication.test, bundle);
-    response.json.should.have.property('username');
+    response.data.should.have.property('username');
   });
 
   it('fails on bad auth', () => {

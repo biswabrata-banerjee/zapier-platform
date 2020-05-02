@@ -34,7 +34,7 @@ module.exports = {
         }
       };
 
-      return z.request(url, options).then(response => response.json);
+      return z.request(url, options).then(response => response.data);
     },
 
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example

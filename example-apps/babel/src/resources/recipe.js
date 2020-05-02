@@ -4,7 +4,7 @@ const getRecipe = async (z, bundle) => {
   const response = await z.request({
     url: `${_sharedBaseUrl}/recipes/${bundle.inputData.id}`
   });
-  return response.json;
+  return response.data;
 };
 
 const listRecipes = async (z, bundle) => {
@@ -14,7 +14,7 @@ const listRecipes = async (z, bundle) => {
       style: bundle.inputData.style
     }
   });
-  return response.json;
+  return response.data;
 };
 
 const createRecipe = async (z, bundle) => {
@@ -30,7 +30,7 @@ const createRecipe = async (z, bundle) => {
       'content-type': 'application/json'
     }
   });
-  return response.json;
+  return response.data;
 };
 
 const searchRecipe = async (z, bundle) => {
@@ -40,7 +40,7 @@ const searchRecipe = async (z, bundle) => {
       nameSearch: bundle.inputData.name
     }
   });
-  const matchingRecipes = response.json;
+  const matchingRecipes = response.data;
 
   // Only return the first matching recipe
   if (matchingRecipes && matchingRecipes.length) {
